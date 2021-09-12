@@ -3,6 +3,8 @@ server:
     include-stacktrace: ON_PARAM
 
 spring:
+  application:
+    name: springboot2-essencials
   datasource:
     url: jdbc:mysql://localhost:3307/anime?useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: root

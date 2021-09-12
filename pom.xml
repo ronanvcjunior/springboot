@@ -185,6 +185,25 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>3.1.4</version>
+				<configuration>
+					<from>
+						<image>gcr.io/distroless/java:11</image>
+					</from>
+					<to>
+						<image>registry.hub.docker.com/ronanvieira/springboot</image>
+						<tags>
+							<tag>0.0.1-SNAPSHOT</tag>
+						</tags>
+					</to>
+					<container>
+						<mainClass>br.com.ronan.springboot.SpringbootApplication</mainClass>
+					</container>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 

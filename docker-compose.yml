@@ -1,4 +1,8 @@
 version: "3.1"
+x-database-variables: &database-variables
+  SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/anime?useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+  SPRING_DATASOURCE_USERNAME: root
+  SPRING_DATASOURCE_PASSWORD: senha123
 services:
   db:
     image: mysql
@@ -11,6 +15,7 @@ services:
       - "3307:3307"
     volumes:
       - springBoot_data:/var/lib/mysql
+    mem_limit: 512m
 
   prometheus:
     image: prom/prometheus:latest
@@ -21,12 +26,22 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
+    mem_limit: 128m
 
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     ports: 
       - "3000:3000"
+    mem_limit: 128m
+
+  springboot:
+    image: ronanvieira/springboot:0.0.1-SNAPSHOT
+    ports: 
+    - "8080:8080"
+    environment: 
+      <<: *database-variables
+    mem_limit: 512m
 
 volumes:
   springBoot_data:

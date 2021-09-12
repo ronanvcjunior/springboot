@@ -25,20 +25,26 @@ import br.com.ronan.springboot.domain.Anime;
 import br.com.ronan.springboot.requests.AnimePostRequestBody;
 import br.com.ronan.springboot.requests.AnimePutRequestBody;
 import br.com.ronan.springboot.service.AnimeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 // import br.com.ronan.springboot.util.DateUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+// import lombok.extern.log4j.Log4j2;
 
 @RestController
 @RequestMapping("animes")
-@Log4j2
+// @Log4j2
 @RequiredArgsConstructor
 public class AnimeController {
     // private final DateUtil dateUtil;
     private final AnimeService animeService;
 
     @GetMapping
-    public ResponseEntity<Page<Anime>> list(Pageable pageable) {
+    @Operation(summary = "List all animes paginated", 
+    description = "The default size is 20, use the parameter size to change the default value", tags = {"anime"})
+    public ResponseEntity<Page<Anime>> list(@Parameter(hidden = true) Pageable pageable) {
         // log.info(dateUtil.formatLocalDateTimeToDatabaseStyle(LocalDateTime.now()));
         return ResponseEntity.ok(animeService.listAll(pageable));
     }
@@ -54,12 +60,13 @@ public class AnimeController {
         return ResponseEntity.ok(animeService.findByIdOrThrowBadRequestException(id));
     }
 
-    // @PreAuthorize("hasRole('ADMIN')")
     // @GetMapping(path = "/admin/by-id/{id}")
-    // public ResponseEntity<Anime> findByIdAuthenticatorPrincipal(@PathVariable long id, @AuthenticationPrincipal UserDetails userDetails) {
-    //     log.info(userDetails);
-    //     return ResponseEntity.ok(animeService.findByIdOrThrowBadRequestException(id));
-    // }
+    // @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(path = "/by-id/{id}")
+    public ResponseEntity<Anime> findByIdAuthenticatorPrincipal(@PathVariable long id, @AuthenticationPrincipal UserDetails userDetails) {
+        // log.info(userDetails);
+        return ResponseEntity.ok(animeService.findByIdOrThrowBadRequestException(id));
+    }
 
     @GetMapping(path = "/find")
     public ResponseEntity<List<Anime>> findByName(@RequestParam(required = false) String name) {
@@ -73,6 +80,10 @@ public class AnimeController {
     }
 
     @DeleteMapping(path = "/admin/{id}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Succesful Operation"),
+            @ApiResponse(responseCode = "400", description = "When Anime does not exist in the Database")
+    })
     public ResponseEntity<Void> delete(@PathVariable long id) {
         animeService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
